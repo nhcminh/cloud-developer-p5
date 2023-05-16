@@ -24,10 +24,11 @@ export const getAllTodos = async (userId: string) => {
     ExpressionAttributeValues: { ':userId': userId },
     ProjectionExpression: 'todoId, userId, createdAt, #_name, dueDate, done, attachmentUrl',
   }).promise();
-  return todos.Items || [];
+  return todos.Items as TodoItem[];
 };
 
 export const createTodo = async (todo: TodoItem) => {
+  logger.info('create a Todo')
   const newTodo: TodoItem = {
     userId: todo.userId,
     todoId: todo.todoId,
@@ -44,6 +45,7 @@ export const createTodo = async (todo: TodoItem) => {
 };
 
 export const updateTodo = async (userId: string, todoId: string, todo: UpdateTodoRequest) => {
+  logger.info('update todo', todoId)
   await docClient.update({
     TableName: TODOS_TABLE,
     Key: {
@@ -66,6 +68,7 @@ export const updateTodo = async (userId: string, todoId: string, todo: UpdateTod
 }
 
 export const deleteTodo = async (userId: string, todoId: string) => {
+  logger.info('delete todo', todoId)
   await docClient.delete({
     TableName: TODOS_TABLE,
     Key: {
@@ -84,7 +87,8 @@ export const updateTodoAttachmentUrl = async (userId: string, todoId: string): P
     Key: `${todoId}.jpg`,
     Expires: parseInt(SIGNED_URL_EXPIRATION),
   });
-
+  
+  logger.info('update Todo Attachment', presignedUrl)
 
   await docClient.update({
     TableName: TODOS_TABLE,
@@ -102,6 +106,8 @@ export const updateTodoAttachmentUrl = async (userId: string, todoId: string): P
 };
 
 export const TodosPaging = async (userId: string, nextKey: JSON, limit: number): Promise<{ itemList: TodoItem[], nextKey: any }> => {
+  logger.info('Get todo as paging', nextKey)
+
   const res = await docClient.query({
     TableName: TODOS_TABLE,
     Limit: limit,
@@ -117,6 +123,8 @@ export const TodosPaging = async (userId: string, nextKey: JSON, limit: number):
 }
 
 export const SearchTodo = async (userId: string, searchValue: string): Promise<TodoItem[]> => {
+  logger.info('Search todos contain a search value', searchValue)
+
   const res = await docClient.query({
     TableName: TODOS_TABLE,
     IndexName: INDEX_NAME,

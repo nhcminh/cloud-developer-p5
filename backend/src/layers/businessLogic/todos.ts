@@ -6,26 +6,23 @@ import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 import { createLogger } from '../../utils/logger'
 import * as uuid from 'uuid'
-// import * as createError from 'http-errors'
 
 // TODO: Implement businessLogic
-const logger = createLogger('TodoAccess')
+const logger = createLogger('TodoBusinessLogic')
 const attachmentUtils = new AttachmentUtils()
-// const todosAccess = new TodosAccess
 
 // Get todo function
-export const getTodos = async (userId: string) => {
-  logger.info('Get todos for user function called.')
+export const getTodos = async (userId: string): Promise<TodoItem[]> => {
+  logger.info('Get all Todos.')
   return await TodosAccess.getAllTodos(userId)
 }
 
 // Create todo function
-export async function createTodo(
+export const createTodo = async (
   newTodo: CreateTodoRequest,
   userId: string
-): Promise<TodoItem> {
-  logger.info('Create todo function called')
-
+): Promise<TodoItem> => {
+  logger.info('Create todo')
   const todoId = uuid.v4()
   const createdAt = new Date().toISOString()
   const newItem: TodoItem = {
@@ -42,46 +39,47 @@ export async function createTodo(
 }
 
 // Update todo function
-export async function updateTodo(
+export const updateTodo = async (
   userId: string,
   todoId: string,
   todoUpdate: UpdateTodoRequest
-): Promise<TodoUpdate> {
-  logger.info('Update todo function called')
+): Promise<TodoUpdate> => {
+  logger.info('Update todo')
   return await TodosAccess.updateTodo(userId, todoId, todoUpdate)
 }
 
-// Delete todo function
-export async function deleteTodo(
-  userId: string,
-  todoId: string
-): Promise<string> {
-  logger.info('Delete todo function called')
-  return await TodosAccess.deleteTodo(userId, todoId)
-}
-
 // Create attachment function
-export async function createAttachmentPresignedUrl(
+export const createAttachmentPresignedUrl = async (
   userId: string,
   todoId: string
-) {
-  logger.info('Create attachment function called')
+): Promise<string> => {
+  logger.info('Create attachment')
   TodosAccess.updateTodoAttachmentUrl(userId, todoId)
   return attachmentUtils.getUploadUrl(todoId)
 }
 
+// Delete todo function
+export const deleteTodo = async (
+  userId: string,
+  todoId: string
+): Promise<string> => {
+  logger.info('Delete todo')
+  return await TodosAccess.deleteTodo(userId, todoId)
+}
+
+
+// Search todo function
+export const searchTodo = async (userId: string, searchValue: string): Promise<TodoItem[]> => {
+  logger.info('Search todos')
+  return await TodosAccess.SearchTodo(userId, searchValue)
+}
+
 // Pagination todo function
-export async function getTodosWithPagination(
+export const getTodosPaging = async (
   userId: string,
   nextKey: JSON,
   limit: number
-) {
-  logger.info('Pagination todo function called')
+): Promise<{ itemList: TodoItem[], nextKey: any }> => {
+  logger.info('Paging Query todo ')
   return await TodosAccess.TodosPaging(userId, nextKey, limit)
-}
-
-// Search todo function
-export async function searchTodo(userId: string, searchValue: string): Promise<TodoItem[]> {
-  logger.info('Search todos for user function called.')
-  return await TodosAccess.SearchTodo(userId, searchValue)
 }

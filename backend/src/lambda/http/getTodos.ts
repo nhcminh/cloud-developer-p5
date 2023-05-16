@@ -6,7 +6,7 @@ import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import {
   getTodos,
-  getTodosWithPagination
+  getTodosPaging
 } from '../../layers/businessLogic/todos'
 import { getUserId } from '../utils'
 
@@ -28,7 +28,7 @@ export const handler = middy(
           })
         }
       } else {
-        const todoItemsWithPagination = await getTodosWithPagination(
+        const todoItemsWithPagination = await getTodosPaging(
           userId,
           nextKey,
           limit

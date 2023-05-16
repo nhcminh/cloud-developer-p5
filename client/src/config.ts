@@ -10,4 +10,4 @@ export const authConfig = {
   callbackUrl: 'http://localhost:3000/callback'
 }
 
-export const limitPagination = 2
+export const limitPagination = 5
